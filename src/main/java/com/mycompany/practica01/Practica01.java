@@ -1,6 +1,5 @@
 
 package com.mycompany.practica01;
-import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
@@ -19,11 +18,11 @@ public class Practica01 {
     //vectores de registro de pelea 
     private static boolean PeleasActivas[]= new boolean[500];//verifica haya historial de peleas
     private static int ContadorPelea=0;            // almacena el id/numero de la pelea
-     private static int[] IDPeleador1 = new int[500]; // IDs de personajes que pelean
+    private static int[] IDPeleador1 = new int[500]; // IDs de personajes que pelean
     private static int[] IDPeleador2 = new int[500];      //almacena los ids de los personajes involucrados en la pelea
     private static String[] PeleadorGanador= new String[500];         //almacena el id del peleador ganador
     private static String[] fechasPeleas = new String[500]; //almacena la fcha y hora de las peleas
-    
+    private static String[] RegistroDepeleas= new String[500];
    /*
     private static String[] ListaHabilidades ={
     "Fuerza",       //0
@@ -95,10 +94,13 @@ public class Practica01 {
                     Realizarpeleadepersonajes();
                     break;
                 case 7:
+                    VerPeleas();
                     // Ver historial de peleas
                     break;
                 case 8:
                     // Ver datos de estudiante
+                    System.out.println("Nombre: Osmar Alejando Alay Quevedo\n");
+                    System.out.println("Carnet: 202100024");
                     break;
                 case 9:
                     System.out.println("Saliendo del programa...");
@@ -230,7 +232,7 @@ private static void modificarpersonaje(){// op 2 modificar personaje
        System.out.println("Ingrese el id del personaje");
         BusquedaModificar= sc.nextInt();
        
-       if(personajesActivos[BusquedaModificar]=false){
+       if(!personajesActivos[BusquedaModificar]){
            System.out.println("El personaje no existe o fue eliminado");
            return;
        }else{
@@ -258,7 +260,7 @@ private static void eliminarpersonaje(){// op 3 eliminar personaje
         }
         System.out.println("Ingrese el id del personaje a eliminar");
         BusquedaEliminar= sc.nextInt();
-        if(personajesActivos[BusquedaEliminar]=false){
+        if(personajesActivos[BusquedaEliminar]==false){
            System.out.println("El personaje no existe o ya fue eliminado");
            return;
        }else{
@@ -299,7 +301,7 @@ private static void BuscarPersonaje(){//inicio buscar personaje
        System.out.println("Ingrese el id del personaje");
         Busqueda= sc.nextInt();
        
-       if(personajesActivos[Busqueda]=false){
+       if(!personajesActivos[Busqueda]){
            System.out.println("El personaje no existe o fue eliminado");
            return;
        }else{
@@ -318,10 +320,8 @@ private static void BuscarPersonaje(){//inicio buscar personaje
 private static void Realizarpeleadepersonajes(){// op 6 realizar pelea
     LocalDateTime ahora = LocalDateTime.now();
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-    int IDp1;//almacena el id del peleador 1
-    int IDp2;//almacena el id del pleador 2
-    //String Ganador;//almacena temporalmente el nombre del jugador ganador
-    //verificaciones  que haya espacio para peleas y que hayan jugadores
+    int IDp1=0;//almacena el id del peleador 1
+    int IDp2=0;//almacena el id del pleador 2
     if (ContadorPelea >= 500) {
         System.out.println("Error: No se pueden agregar más peleas Límite alcanzado.");
         return;
@@ -336,15 +336,15 @@ private static void Realizarpeleadepersonajes(){// op 6 realizar pelea
     }
     System.out.println("Ingrese el id del peleador N1");
     IDp1= sc.nextInt();
-    System.out.println("Ingrese el id del peleador N2");
-    IDp2= sc.nextInt();
     //verificacion
-    if(personajesActivos[IDp1]==false){
+    if(!personajesActivos[IDp1]){
         System.out.println("ID no econtrado, el personaje no existe o ya fue eliminado");
         return;
     }
+    System.out.println("Ingrese el id del peleador N2");
+    IDp2= sc.nextInt();
     
-    if(personajesActivos[IDp2]==false){
+    if(!personajesActivos[IDp2]){
         System.out.println("ID no econtrado, el personaje no existe o ya fue eliminado");
         return;
     }
@@ -355,29 +355,33 @@ private static void Realizarpeleadepersonajes(){// op 6 realizar pelea
     //fin de verificaciones
     if(NivelePoder[IDp1]>NivelePoder[IDp2]){
         System.out.println("Peleador 1:"+NombresPersonaje[IDp1]+" ha sido el Ganador" );
-        PeleadorGanador[ContadorPelea]=NombresPersonaje[IDp1];
-        IDPeleador1[ContadorPelea]=IDp1;
-        IDPeleador2[ContadorPelea]=IDp2;
         PeleasActivas[ContadorPelea]=true;
         ContadorPelea++;
+        RegistroDepeleas[ContadorPelea]=
+                "|Peleador1: "+NombresPersonaje[IDp1]+
+                "|Peleador2: "+NombresPersonaje[IDp2]+
+                "|Ganador: "+NombresPersonaje[IDp1]+
+                "|Fecha Y Hora: "+ahora.format(formato);
         return;
     }else if(NivelePoder[IDp1]<NivelePoder[IDp2]){
         System.out.println("Peleador 2:"+NombresPersonaje[IDp1]+" ha sido el Ganador" );
-        PeleadorGanador[ContadorPelea]=NombresPersonaje[IDp1];
-        IDPeleador1[ContadorPelea]=IDp1;
-        IDPeleador2[ContadorPelea]=IDp2;
-        fechasPeleas[ContadorPelea]=ahora.format(formato);
         PeleasActivas[ContadorPelea]=true;
         ContadorPelea++;
+        RegistroDepeleas[ContadorPelea]=
+                "|Peleador1: "+NombresPersonaje[IDp1]+
+                "|Peleador2: "+NombresPersonaje[IDp2]+
+                "|Ganador: "+NombresPersonaje[IDp2]+
+                "|Fecha Y Hora: "+ahora.format(formato);
         return;
     }else{
         System.out.println("Ha sido un empate");
-        PeleadorGanador[ContadorPelea]="EMPATE";
-        IDPeleador1[ContadorPelea]=IDp1;
-        IDPeleador2[ContadorPelea]=IDp2;
-        fechasPeleas[ContadorPelea]=ahora.format(formato);
         PeleasActivas[ContadorPelea]=true;
         ContadorPelea++;
+        RegistroDepeleas[ContadorPelea]=
+                "|Peleador1: "+NombresPersonaje[IDp1]+
+                "|Peleador2: "+NombresPersonaje[IDp2]+
+                "|Ganador: EMPATE"+
+                "|Fecha Y Hora: "+ahora.format(formato);
     }
     
     
@@ -390,7 +394,7 @@ private static void VerListadodePersonajes(){ // op 5 ver lista de todos los per
         
         for(int i=0;i<ContadorPersonajes;i++){ //for de cliclo de personajes
             
-            if (personajesActivos[i] = false) {//verifica si hay espacios con personajes eliminados
+            if (!personajesActivos[i]) {//verifica si hay espacios con personajes eliminados
                     System.out.println("PERSONAJE ELIMINADO");
             }else{
             System.out.println("| ID de personaje:"+i+
@@ -408,7 +412,18 @@ private static void VerListadodePersonajes(){ // op 5 ver lista de todos los per
         }
         }
     }//fin op 5
+private static void VerPeleas(){// op7
+    if(ContadorPelea==0){
+        System.out.println("ERROR:no hay peleas registradas");
+    }
+    for(int i=0;i<=ContadorPelea;i++){
+        System.out.println(""+RegistroDepeleas[i]+"\n");
+        System.out.println("--------------------------------");
+    }
 }
+}
+
+
     
   
     
